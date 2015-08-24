@@ -194,8 +194,9 @@ static const BOOL kEnableSkipButton = YES;
 }
 
 - (void)handleSingleTap:(UITapGestureRecognizer *)recognizer {
-    [self.delegate coachMarksViewDidClicked:self atIndex:markIndex];
-    [self cleanup];
+    if ([self.delegate coachMarksViewDidClicked:self atIndex:markIndex]) {
+        [self cleanup];
+    }
 }
 
 - (void)goToCoachMarkIndexed:(NSUInteger)index {
@@ -273,10 +274,15 @@ static const BOOL kEnableSkipButton = YES;
         {
             y = markRect.origin.y - self.lblCaption.frame.size.height - kLabelMargin;
             if(showArrow) {
-                self.arrowImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow-bottom"]];
+                self.arrowImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow-down"]];
                 CGRect imageViewFrame = self.arrowImage.frame;
-                imageViewFrame.origin.x = x;
-                imageViewFrame.origin.y = y;
+                imageViewFrame.origin.x = markRect.origin.x + markRect.size.width / 2. - imageViewFrame.size.width / 2.;
+                if (self.lblCaption.frame.size.height > 30) {
+                    imageViewFrame.origin.y = y - 0;
+                }
+                else {
+                    imageViewFrame.origin.y = y - 20;
+                }
                 self.arrowImage.frame = imageViewFrame;
                 y -= (self.arrowImage.frame.size.height + kLabelMargin);
                 [self addSubview:self.arrowImage];
