@@ -55,7 +55,8 @@ typedef NS_ENUM(NSInteger, LabelPosition) {
     LABEL_POSITION_LEFT,
     LABEL_POSITION_TOP,
     LABEL_POSITION_RIGHT,
-    LABEL_POSITION_RIGHT_BOTTOM
+    LABEL_POSITION_RIGHT_BOTTOM,
+    LABEL_POSITION_LEFT_BOTTOM
 };
 
 typedef NS_ENUM(NSInteger, ContinueLocation) {
@@ -80,12 +81,15 @@ typedef NS_ENUM(NSInteger, ContinueLocation) {
 @property (nonatomic) CGFloat lblSpacing;
 @property (nonatomic) BOOL enableContinueLabel;
 @property (nonatomic) BOOL enableSkipButton;
+@property (nonatomic, copy) NSString *continueLabelText;
+@property (nonatomic, copy) NSString *skipButtonText;
 @property (nonatomic) ContinueLocation continueLocation;
 @property (nonatomic, strong) UIImageView *arrowImage;
 
 - (id)initWithFrame:(CGRect)frame coachMarks:(NSArray *)marks;
 - (void)start;
 - (void)goToCoachMarkIndexed:(NSUInteger)index;
+- (void)end;
 
 @end
 
@@ -96,6 +100,7 @@ typedef NS_ENUM(NSInteger, ContinueLocation) {
 - (void)coachMarksView:(MPCoachMarks *)coachMarksView didNavigateToIndex:(NSUInteger)index;
 - (void)coachMarksViewWillCleanup:(MPCoachMarks *)coachMarksView;
 - (void)coachMarksViewDidCleanup:(MPCoachMarks *)coachMarksView;
-- (BOOL)coachMarksViewDidClicked:(MPCoachMarks *)coachMarksView atIndex:(NSInteger)index; //return YES to cleanup
+- (void)coachMarksViewDidClicked:(MPCoachMarks *)coachMarksView atIndex:(NSInteger)index;
+- (void)coachMarksViewSkipButtonClicked:(MPCoachMarks *)coachMarksView;
 
 @end

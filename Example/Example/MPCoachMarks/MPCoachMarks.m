@@ -17,6 +17,14 @@ static const CGFloat kLabelMargin = 5.0f;
 static const CGFloat kMaskAlpha = 0.75f;
 static const BOOL kEnableContinueLabel = YES;
 static const BOOL kEnableSkipButton = YES;
+NSString *const kSkipButtonText = @"Skip";
+NSString *const kContinueLabelText = @"Tap to continue";
+
+@interface MPCoachMarks()
+#ifdef __IPHONE_11_0
+-(UIEdgeInsets)getSafeAreaInsets;
+#endif
+@end
 
 @implementation MPCoachMarks {
     CAShapeLayer *mask;
@@ -38,6 +46,8 @@ static const BOOL kEnableSkipButton = YES;
 @synthesize lblSpacing;
 @synthesize enableContinueLabel;
 @synthesize enableSkipButton;
+@synthesize continueLabelText;
+@synthesize skipButtonText;
 @synthesize arrowImage;
 @synthesize continueLocation;
 
@@ -81,6 +91,8 @@ static const BOOL kEnableSkipButton = YES;
     self.lblSpacing = kLblSpacing;
     self.enableContinueLabel = kEnableContinueLabel;
     self.enableSkipButton = kEnableSkipButton;
+    self.continueLabelText = kContinueLabelText;
+    self.skipButtonText = kSkipButtonText;
     
     // Shape layer mask
     mask = [CAShapeLayer layer];
@@ -198,6 +210,16 @@ static const BOOL kEnableSkipButton = YES;
     [self cleanup];
 }
 
+- (UIImage*)fetchImage:(NSString*)name {
+    // Check for iOS 8
+    if ([UIImage respondsToSelector:@selector(imageNamed:inBundle:compatibleWithTraitCollection:)]) {
+        NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+        return [UIImage imageNamed:name inBundle:bundle compatibleWithTraitCollection:nil];
+    } else {
+        return [UIImage imageNamed:name];
+    }
+}
+
 - (void)goToCoachMarkIndexed:(NSUInteger)index {
     // Out of bounds
     if (index >= self.coachMarks.count) {
@@ -273,7 +295,7 @@ static const BOOL kEnableSkipButton = YES;
         {
             y = markRect.origin.y - self.lblCaption.frame.size.height - kLabelMargin;
             if(showArrow) {
-                self.arrowImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow-bottom"]];
+                self.arrowImage = [[UIImageView alloc] initWithImage:[self fetchImage:@"arrow-down"]];
                 CGRect imageViewFrame = self.arrowImage.frame;
                 imageViewFrame.origin.x = x;
                 imageViewFrame.origin.y = y;
@@ -288,7 +310,7 @@ static const BOOL kEnableSkipButton = YES;
             y = markRect.origin.y + markRect.size.height/2 - self.lblCaption.frame.size.height/2;
             x = self.bounds.size.width - self.lblCaption.frame.size.width - kLabelMargin - markRect.size.width;
             if(showArrow) {
-                self.arrowImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow-right"]];
+                self.arrowImage = [[UIImageView alloc] initWithImage:[self fetchImage:@"arrow-right"]];
                 CGRect imageViewFrame = self.arrowImage.frame;
                 imageViewFrame.origin.x = self.bounds.size.width - self.arrowImage.frame.size.width - kLabelMargin - markRect.size.width;
                 imageViewFrame.origin.y = y + self.lblCaption.frame.size.height/2 - imageViewFrame.size.height/2;
@@ -316,7 +338,7 @@ static const BOOL kEnableSkipButton = YES;
             }
             x = markRect.origin.x + markRect.size.width + kLabelMargin;
             if(showArrow) {
-                self.arrowImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow-top"]];
+                self.arrowImage = [[UIImageView alloc] initWithImage:[self fetchImage:@"arrow-top"]];
                 CGRect imageViewFrame = self.arrowImage.frame;
                 imageViewFrame.origin.x = x - markRect.size.width/2 - imageViewFrame.size.width/2;
                 imageViewFrame.origin.y = y - kLabelMargin; //self.lblCaption.frame.size.height/2
@@ -333,7 +355,7 @@ static const BOOL kEnableSkipButton = YES;
                 y = markRect.origin.y - self.lblSpacing - self.lblCaption.frame.size.height;
             }
             if(showArrow) {
-                self.arrowImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow-top"]];
+                self.arrowImage = [[UIImageView alloc] initWithImage:[self fetchImage:@"arrow-top"]];
                 CGRect imageViewFrame = self.arrowImage.frame;
                 imageViewFrame.origin.x = x;
                 imageViewFrame.origin.y = y;
@@ -376,7 +398,7 @@ static const BOOL kEnableSkipButton = YES;
             lblContinue = [[UILabel alloc] initWithFrame:(CGRect){{0, [self yOriginForContinueLabel]}, {lblContinueWidth, 30.0f}}];
             lblContinue.font = [UIFont boldSystemFontOfSize:13.0f];
             lblContinue.textAlignment = NSTextAlignmentCenter;
-            lblContinue.text = @"Tap to continue";
+            lblContinue.text = self.continueLabelText;
             lblContinue.alpha = 0.0f;
             lblContinue.backgroundColor = [UIColor whiteColor];
             [self addSubview:lblContinue];
@@ -393,7 +415,7 @@ static const BOOL kEnableSkipButton = YES;
     if (self.enableSkipButton) {
         btnSkipCoach = [[UIButton alloc] initWithFrame:(CGRect){{lblContinueWidth, [self yOriginForContinueLabel]}, {btnSkipWidth, 30.0f}}];
         [btnSkipCoach addTarget:self action:@selector(skipCoach) forControlEvents:UIControlEventTouchUpInside];
-        [btnSkipCoach setTitle:@"Skip" forState:UIControlStateNormal];
+        [btnSkipCoach setTitle:self.skipButtonText forState:UIControlStateNormal];
         btnSkipCoach.titleLabel.font = [UIFont boldSystemFontOfSize:13.0f];
         btnSkipCoach.alpha = 0.0f;
         btnSkipCoach.tintColor = [UIColor whiteColor];
@@ -405,15 +427,41 @@ static const BOOL kEnableSkipButton = YES;
 }
 
 - (CGFloat)yOriginForContinueLabel {
+    float topOffset = 20.0f;
+    float bottomOffset = 30.f;
+
+#ifdef __IPHONE_11_0
+    UIEdgeInsets safeInsets = [self getSafeAreaInsets];
+    topOffset += safeInsets.top;
+    bottomOffset += safeInsets.bottom;
+#endif
+
     switch (self.continueLocation) {
         case LOCATION_TOP:
-            return 20.0f;
+            return topOffset;
         case LOCATION_CENTER:
             return self.bounds.size.height / 2 - 15.0f;
         default:
-            return self.bounds.size.height - 30.0f;
+            return self.bounds.size.height - bottomOffset;
     }
 }
+
+#ifdef __IPHONE_11_0
+-(UIEdgeInsets)getSafeAreaInsets {
+    UIEdgeInsets safeInsets = { .top = 0, .bottom = 0, .left = 0, .right = 0 };
+    SEL selector = @selector(safeAreaInsets);
+    if ([self respondsToSelector:selector])
+    {
+        NSInvocation* invocation = [NSInvocation invocationWithMethodSignature:[self methodSignatureForSelector:selector]];
+        invocation.selector = selector;
+        invocation.target = self;
+        [invocation invoke];
+
+        [invocation getReturnValue:&safeInsets];
+    }
+    return safeInsets;
+}
+#endif
 
 #pragma mark - Cleanup
 

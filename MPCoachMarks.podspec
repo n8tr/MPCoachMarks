@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name         = "MPCoachMarks"
-  s.version      = "0.0.7"
+  s.version      = "0.0.12"
   s.summary      = "MPCoachMarks is an iOS class that displays user coach marks with a couple of shapes"
   s.homepage     = "https://github.com/bubudrc/MPCoachMarks"
   s.screenshots  = "http://zippy.gfycat.com/DefiantTastyDogwoodtwigborer.gif"
@@ -11,6 +11,6 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/bubudrc/MPCoachMarks.git", :tag => s.version }
   s.source_files  = "MPCoachMarks/**/*.{h,m}"
   s.resources = ["MPCoachMarks/arrows/*.png"]
-  s.frameworks = "QuartzCore", "CoreGraphics"
+  s.frameworks = "CoreGraphics", "QuartzCore"
   s.requires_arc = true
 end
