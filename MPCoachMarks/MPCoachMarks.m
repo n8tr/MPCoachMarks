@@ -212,7 +212,7 @@ NSString *const kContinueLabelText = @"Tap to continue";
 
 - (void)handleSingleTap:(UITapGestureRecognizer *)recognizer {
     if ([self.delegate coachMarksViewDidClicked:self atIndex:markIndex]) {
-        [self cleanup];
+        [self cleanup:YES];
     }
 }
 

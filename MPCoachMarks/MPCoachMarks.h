@@ -100,7 +100,7 @@ typedef NS_ENUM(NSInteger, ContinueLocation) {
 - (void)coachMarksView:(MPCoachMarks *)coachMarksView didNavigateToIndex:(NSUInteger)index;
 - (void)coachMarksViewWillCleanup:(MPCoachMarks *)coachMarksView;
 - (void)coachMarksViewDidCleanup:(MPCoachMarks *)coachMarksView;
-- (void)coachMarksViewDidClicked:(MPCoachMarks *)coachMarksView atIndex:(NSInteger)index;
+- (BOOL)coachMarksViewDidClicked:(MPCoachMarks *)coachMarksView atIndex:(NSInteger)index;
 - (void)coachMarksViewSkipButtonClicked:(MPCoachMarks *)coachMarksView;
-
+- (void)cleanup:(BOOL)animated;
 @end
