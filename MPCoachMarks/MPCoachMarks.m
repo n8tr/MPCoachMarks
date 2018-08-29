@@ -111,7 +111,7 @@ NSString *const kContinueLabelText = @"Tap to continue";
     self.lblCaption.font = [UIFont systemFontOfSize:20.0f];
     self.lblCaption.lineBreakMode = NSLineBreakByWordWrapping;
     self.lblCaption.numberOfLines = 0;
-    self.lblCaption.textAlignment = NSTextAlignmentCenter;
+    self.lblCaption.textAlignment = NSTextAlignmentLeft;
     self.lblCaption.alpha = 0.0f;
     [self addSubview:self.lblCaption];
     
@@ -290,6 +290,7 @@ NSString *const kContinueLabelText = @"Tap to continue";
         case LABEL_POSITION_TOP:
         {
             y = markRect.origin.y - self.lblCaption.frame.size.height - kLabelMargin;
+            x = self.bounds.size.width / 2.0 - self.lblCaption.frame.size.width / 2.0 - kLabelMargin / 2.0;
             if(showArrow) {
                 self.arrowImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow-down"]];
                 CGRect imageViewFrame = self.arrowImage.frame;
